@@ -19,11 +19,13 @@ from datetime import datetime
 # # # 主函数 # # #
 #################
 if __name__ == "__main__" :
+    # num_members = input("Please input the num of members in a group:")
+    # num_group = input("Please input the num of group:")
 	# 常用变量，用类代替宏定义
 	PARA = HEAD.Parameter()
 		# NUM_ROWS = 4;		#行数，代表『一天4个时间段（大课）』
 		# NUM_COLS = 5;		#列数，代表『一周5天』
-		# NUM_MEMBERS = 12;	#组员数量，12人
+		# NUM_MEMBERS = 11;	#组员数量，11人
 		# UserName = 'JaunteZhou'		# MAC用户系统用户名，对目录有影响
 		# ROOT = '/' + 'Users' + '/' + UserName + '/' + 'Desktop' + '/' + 'Ddd_Pkkb';
 
@@ -42,6 +44,8 @@ if __name__ == "__main__" :
 	# 空课表类的实例化对象
 	empty_class_table = C_EmptyClassTable.EmptyClassTable( week )
 
+	# Excel工作簿名，依次遍历6个现场组组员空课时间表
+	excel_list = HEAD.Get_XLS_Fnlist( PARA )
 
 	#########################################################
 	# # # 依次读取队员空课表数据，存储在变量 members_list 中 # # #
@@ -50,10 +54,9 @@ if __name__ == "__main__" :
 		# 在成员表 members_list 中插入一个数组用于存储新的成员变量
 		members_list += [ [] ]
 
-		# Excel工作簿名，依次遍历6个现场组组员空课时间表
-		excel_name = HEAD.Get_XLS_Full_Name( PARA.DATA_DIR, str(g) )
+		excel_name = excel_list[g-1]
 		# 返回值为False，则文件不存在，跳过
-		if not excel_name :
+		if excel_name == '':
 			continue
 
 		# 返回文件名，则打开文件
@@ -93,7 +96,7 @@ if __name__ == "__main__" :
 
 	print "开始写入文件！"
 	# Excel工作簿名，依次遍历6个现场组组员空课时间表
-	excel_name = "第" + str(WEEK) + "周排课表.xls"
+	cct_name = "第" + str(WEEK) + "周排课表.xls"
 
 	# 返回文件名，则打开文件
 	wb = xlwt.Workbook()
@@ -152,11 +155,15 @@ if __name__ == "__main__" :
 	ws_all.write(4,0,u"78节")
 	
 
-	root = PARA.DATA_DIR + "/" + excel_name
+	root = PARA.CCT_DIR + os.sep + cct_name
 	wb.save(root)
 
 	print "写入完毕！"
 	print "文件路径为", root
+
+	HEAD.Remove_Temp_File( PARA, excel_list )
+	print "已将temp文件转移至temp文件夹下"
+
 #################
 ### 主函数结束 ###
 #################
